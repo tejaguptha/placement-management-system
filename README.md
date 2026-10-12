@@ -40,7 +40,7 @@ This repository is configured to deploy seamlessly as a unified full-stack appli
 ### Step 1: Import Repository
 1. Log in to [Vercel](https://vercel.com).
 2. Click **Add New...** > **Project**.
-3. Import your GitHub repository (`koushikkodavalla/kumar`).
+3. Import your GitHub repository (`tejaguptha/placement-management-system`).
 4. **Root Directory**: Leave as default (`./` or empty).
 5. **Framework Preset**: Vercel will auto-detect Vite or Other (leave as default). The build settings are governed by `vercel.json`.
 
