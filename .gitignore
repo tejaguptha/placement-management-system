@@ -3,6 +3,10 @@ node_modules/
 .pnp
 .pnp.js
 
+# Environment files
+.env
+.env.local
+
 # Production build artifacts
 dist/
 build/

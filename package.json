@@ -4,11 +4,13 @@
   "private": true,
   "description": "Full-stack Placement Management System deploy-ready for Vercel",
   "scripts": {
-    "build": "npm --prefix frontend install && npm --prefix frontend run build",
+    "postinstall": "npm --prefix frontend install",
+    "build": "npm --prefix frontend run build",
     "start": "node backend/server.js",
     "server": "node backend/server.js",
     "client": "npm --prefix frontend run dev",
-    "dev": "node backend/server.js"
+    "seed": "node backend/seed.js",
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"node backend/server.js\" \"npm --prefix frontend run dev\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,7 +21,8 @@
     "mongoose": "^8.8.4"
   },
   "devDependencies": {
-    "@vercel/node": "^3.2.30"
+    "@vercel/node": "^3.2.29",
+    "concurrently": "^10.0.5"
   },
   "engines": {
     "node": ">=18.x"
