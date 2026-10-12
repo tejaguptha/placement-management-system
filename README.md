@@ -1,5 +1,11 @@
 # Placement Management System
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-success?style=for-the-badge&logo=vercel)](https://placement-management-system-rust.vercel.app)
+[![API Status](https://img.shields.io/badge/API-Online-brightgreen?style=for-the-badge)](https://placement-management-system-rust.vercel.app/api/health)
+
+> 🚀 **Live Production URL:** [https://placement-management-system-rust.vercel.app](https://placement-management-system-rust.vercel.app)  
+> 🩺 **Live API Endpoint:** [https://placement-management-system-rust.vercel.app/api/health](https://placement-management-system-rust.vercel.app/api/health)
+
 A clean, professional full-stack MERN placement portal with three dedicated role profiles:
 - **Student**: View eligible placement drives, apply, track status, update profile.
 - **Company**: Post placement drives, specify criteria, review applicants, change status (Shortlist/Select/Reject).
