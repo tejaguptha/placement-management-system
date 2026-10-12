@@ -598,6 +598,27 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(97,115,255,.11);
 }
 
+.field-error {
+  color: #ff9cac;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+input.input-error,
+textarea.input-error,
+select.input-error {
+  border-color: #ff788c;
+}
+
+input.input-error:focus,
+textarea.input-error:focus,
+select.input-error:focus {
+  border-color: #ff788c;
+  box-shadow: 0 0 0 3px rgba(255, 120, 140, 0.15);
+}
+
 textarea {
   min-height: 125px;
   resize: vertical;

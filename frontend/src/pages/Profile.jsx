@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { api } from "../api";
 import { getStoredUser } from "../utils/auth";
+import { isValidUrl } from "../utils/validation";
 import PageHeader from "../components/PageHeader";
 import Field from "../components/Field";
 
@@ -9,20 +10,51 @@ export default function Profile() {
   const [form, setForm] = useState(initial || {});
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [urlError, setUrlError] = useState("");
   const isStudent = initial?.role === "student";
 
-  const update = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const update = e => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    if (name === "website" && urlError) {
+      if (!value.trim() || isValidUrl(value)) {
+        setUrlError("");
+      }
+    }
+  };
+
+  const handleWebsiteBlur = e => {
+    const val = (form.website || "").trim();
+    if (val && !isValidUrl(val)) {
+      setUrlError("Invalid URL. Please enter a valid URL.");
+    } else {
+      setUrlError("");
+    }
+  };
 
   const submit = async e => {
     e.preventDefault();
     setIsError(false);
+    setMessage("");
+
+    if (form.website && form.website.trim()) {
+      if (!isValidUrl(form.website)) {
+        setUrlError("Invalid URL. Please enter a valid URL.");
+        return;
+      }
+    }
+
     try {
       const updated = await api.updateProfile(form);
       localStorage.setItem("placement_user", JSON.stringify({ ...initial, ...updated }));
       setMessage("Profile updated successfully!");
     } catch (err) {
-      setMessage(err.message);
-      setIsError(true);
+      if (err.message && err.message.toLowerCase().includes("url")) {
+        setUrlError(err.message);
+      } else {
+        setMessage(err.message);
+        setIsError(true);
+      }
     }
   };
 
@@ -87,8 +119,15 @@ export default function Profile() {
             <Field label="Company Name">
               <input name="companyName" value={form.companyName || ""} onChange={update} />
             </Field>
-            <Field label="Website">
-              <input name="website" value={form.website || ""} onChange={update} placeholder="https://company.com" />
+            <Field label="Website" error={urlError}>
+              <input
+                name="website"
+                value={form.website || ""}
+                onChange={update}
+                onBlur={handleWebsiteBlur}
+                placeholder="https://company.com"
+                className={urlError ? "input-error" : ""}
+              />
             </Field>
             <Field label="Company Description">
               <textarea name="description" value={form.description || ""} onChange={update} rows={3} />

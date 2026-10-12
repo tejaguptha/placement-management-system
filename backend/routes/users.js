@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const { authenticate, authorize } = require("../middleware/auth");
+const { isValidUrl } = require("../utils/validation");
 
 const router = express.Router();
 
@@ -33,6 +34,12 @@ router.put("/me", authenticate, async (req, res) => {
     const update = {};
     for (const key of allowed) {
       if (req.body[key] !== undefined) update[key] = req.body[key];
+    }
+
+    if (update.website !== undefined && update.website !== null && String(update.website).trim() !== "") {
+      if (!isValidUrl(String(update.website))) {
+        return res.status(400).json({ message: "Invalid URL. Please enter a valid URL." });
+      }
     }
 
     const user = await User.findByIdAndUpdate(req.user.id, update, {

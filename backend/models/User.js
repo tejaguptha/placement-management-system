@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { isValidUrl } = require("../utils/validation");
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,7 +19,17 @@ const userSchema = new mongoose.Schema(
     backlogs: { type: Number, default: 0 },
 
     companyName: { type: String, default: "" },
-    website: { type: String, default: "" },
+    website: {
+      type: String,
+      default: "",
+      validate: {
+        validator: function(v) {
+          if (!v || v.trim() === "") return true;
+          return isValidUrl(v);
+        },
+        message: "Invalid URL. Please enter a valid URL."
+      }
+    },
     description: { type: String, default: "" }
   },
   { timestamps: true }

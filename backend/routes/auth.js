@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { isValidUrl } = require("../utils/validation");
 
 const router = express.Router();
 
@@ -57,6 +58,12 @@ router.post("/register", async (req, res) => {
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email and password are required." });
+    }
+
+    if (website && typeof website === "string" && website.trim() !== "") {
+      if (!isValidUrl(website)) {
+        return res.status(400).json({ message: "Invalid URL. Please enter a valid URL." });
+      }
     }
 
     const cleanEmail = email.trim().toLowerCase();

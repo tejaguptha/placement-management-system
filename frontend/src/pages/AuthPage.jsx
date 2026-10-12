@@ -3,12 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { GraduationCap, Building2, ShieldCheck, ArrowRight } from "lucide-react";
 import { api } from "../api";
 import { saveSession } from "../utils/auth";
+import { isValidUrl } from "../utils/validation";
 import Field from "../components/Field";
 
 export default function AuthPage({ mode }) {
   const navigate = useNavigate();
   const [role, setRole] = useState("student");
   const [error, setError] = useState("");
+  const [urlError, setUrlError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -25,11 +27,39 @@ export default function AuthPage({ mode }) {
     description: ""
   });
 
-  const update = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const update = e => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+
+    // Automatically clear the error message when the user corrects the URL
+    if (name === "website" && urlError) {
+      if (!value.trim() || isValidUrl(value)) {
+        setUrlError("");
+      }
+    }
+  };
+
+  const handleWebsiteBlur = e => {
+    const val = e.target.value.trim();
+    if (val && !isValidUrl(val)) {
+      setUrlError("Invalid URL. Please enter a valid URL.");
+    } else {
+      setUrlError("");
+    }
+  };
 
   const submit = async e => {
     e.preventDefault();
     setError("");
+
+    // Validate URL on registration before submission
+    if (mode === "register" && form.website && form.website.trim()) {
+      if (!isValidUrl(form.website)) {
+        setUrlError("Invalid URL. Please enter a valid URL.");
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       const data =
@@ -39,7 +69,11 @@ export default function AuthPage({ mode }) {
       saveSession(data);
       navigate(`/${data.user.role}`);
     } catch (err) {
-      setError(err.message);
+      if (err.message && err.message.toLowerCase().includes("url")) {
+        setUrlError(err.message);
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -70,7 +104,11 @@ export default function AuthPage({ mode }) {
               <button
                 key={value}
                 className={role === value ? "profile-tab active" : "profile-tab"}
-                onClick={() => setRole(value)}
+                onClick={() => {
+                  setRole(value);
+                  setError("");
+                  setUrlError("");
+                }}
                 type="button"
               >
                 <Icon size={17} /> {label}
@@ -132,8 +170,15 @@ export default function AuthPage({ mode }) {
                       <input name="companyName" value={form.companyName} onChange={update} required placeholder="Company name" />
                     </Field>
                     <div className="field-grid">
-                      <Field label="Website">
-                        <input name="website" value={form.website} onChange={update} placeholder="https://company.com" />
+                      <Field label="Website" error={urlError}>
+                        <input
+                          name="website"
+                          value={form.website}
+                          onChange={update}
+                          onBlur={handleWebsiteBlur}
+                          placeholder="https://company.com"
+                          className={urlError ? "input-error" : ""}
+                        />
                       </Field>
                       <Field label="About Company">
                         <input name="description" value={form.description} onChange={update} placeholder="Short company description" />
